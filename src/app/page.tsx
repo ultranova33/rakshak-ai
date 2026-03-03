@@ -7,14 +7,16 @@ import { IncidentForm } from "@/components/incident/incident-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RecommendationResponse } from "@/lib/recommendation-engine"
 import { Card, CardContent } from "@/components/ui/card"
-import { AlertCircle, FileText, PhoneCall, History, Globe, Database } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAppStore } from "@/lib/store"
 import { getIncidentHistoryForState } from "@/lib/state-history-db"
+import { AlertCircle, FileText, PhoneCall, History, Globe, Database } from "lucide-react"
+
+import { ForecastConditions } from "@/components/dashboard/forecast-conditions"
 
 export default function Home() {
-  const { activeSidebarTab, currentLocation } = useAppStore();
+  const { activeSidebarTab, currentLocation, activeDisaster } = useAppStore();
   const [analysisResult, setAnalysisResult] = React.useState<RecommendationResponse | null>(null)
   const [activeTab, setActiveTab] = React.useState("intel")
 
@@ -34,18 +36,18 @@ export default function Home() {
 
       {/* Main View controlled by Sidebar */}
       {activeSidebarTab === "intel" ? (
-        <section className="flex flex-1 gap-6 w-full h-[600px] xl:h-auto min-h-[500px]">
-          {/* Left Side: Map Overlay */}
-          <div className="flex-[2] rounded-sm overflow-hidden border border-border bg-card relative">
+        <section className="flex flex-col xl:flex-row flex-1 gap-6 w-full min-h-[500px]">
+          {/* Left Column: Map Overlay (Now 1/3 width) */}
+          <div className="w-full xl:flex-1 h-[300px] sm:h-[400px] xl:h-auto rounded-sm overflow-hidden border border-border bg-card relative min-w-[300px]">
             <MapOverlay />
           </div>
 
-          {/* Right Side: Split View Panel */}
-          <div className="flex-1 rounded-sm border border-border bg-card overflow-hidden flex flex-col">
+          {/* Center Column: Split View Panel (Now 1/3 width) */}
+          <div className="w-full xl:flex-1 rounded-sm border border-border bg-card overflow-hidden flex flex-col min-w-[300px] min-h-[500px]">
             <Tabs defaultValue="intel" value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
-              <TabsList className="grid w-full grid-cols-2 bg-card border-b border-border/50 rounded-none h-12">
-                <TabsTrigger value="intel" className="rounded-none uppercase tracking-widest text-xs">Live Intel</TabsTrigger>
-                <TabsTrigger value="action" className="rounded-none uppercase tracking-widest text-xs">Action Directory</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-card border-b border-border/50 rounded-none h-12 shadow-sm">
+                <TabsTrigger value="intel" className="rounded-none uppercase tracking-widest text-[10px] sm:text-xs">Live Intel</TabsTrigger>
+                <TabsTrigger value="action" className="rounded-none uppercase tracking-widest text-[10px] sm:text-xs">Action Directory</TabsTrigger>
               </TabsList>
 
               <div className="p-4 flex-1 overflow-y-auto">
@@ -145,6 +147,11 @@ export default function Home() {
               </div>
             </Tabs>
           </div>
+
+          {/* Right Column: Forecast Conditions (New 1/3 width) */}
+          <div className="w-full xl:flex-1 rounded-sm border border-border bg-card p-4 overflow-hidden flex flex-col min-w-[300px]">
+            <ForecastConditions analysis={analysisResult} />
+          </div>
         </section>
       ) : activeSidebarTab === "history" ? (
         <section className="flex flex-col flex-1 border border-border bg-card rounded-sm overflow-hidden min-h-[500px]">
@@ -162,7 +169,7 @@ export default function Home() {
           </div>
           <div className="p-4 text-foreground flex-1 overflow-y-auto bg-background/50">
             {(() => {
-              const records = getIncidentHistoryForState(currentLocation.state);
+              const records = getIncidentHistoryForState(currentLocation.state, activeDisaster);
               if (records.length === 0) {
                 return (
                   <div className="w-full h-full flex items-center justify-center opacity-50 flex-col gap-2">
@@ -252,7 +259,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-      )}
-    </CommandLayout>
+      )
+      }
+    </CommandLayout >
   )
 }

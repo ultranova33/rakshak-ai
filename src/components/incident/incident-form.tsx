@@ -56,7 +56,7 @@ export function IncidentForm({ onAnalysisComplete }: { onAnalysisComplete: (resu
                     <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Venue / Indian State</label>
                     <Input name="venue" required placeholder="e.g. Tamil Nadu, Odisha, Kerala" />
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-end">
                     <div className="flex-1">
                         <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Disaster Type</label>
                         <select
@@ -71,9 +71,9 @@ export function IncidentForm({ onAnalysisComplete }: { onAnalysisComplete: (resu
                             ))}
                         </select>
                     </div>
-                    <div className="flex-[0.5]">
+                    <div className="w-32 shrink-0">
                         <label className="text-xs font-mono text-muted-foreground uppercase tracking-wider mb-1 block">Est. Population</label>
-                        <Input name="pop" type="number" required placeholder="e.g. 150000" />
+                        <Input name="pop" type="number" required placeholder="e.g. 150k" className="h-10" />
                     </div>
                 </div>
 
@@ -81,7 +81,7 @@ export function IncidentForm({ onAnalysisComplete }: { onAnalysisComplete: (resu
                     type="submit"
                     variant="default"
                     disabled={isAnalyzing}
-                    className="mt-2"
+                    className="w-full h-11"
                 >
                     {isAnalyzing ? (
                         <span className="flex items-center gap-2 animate-pulse font-mono tracking-widest">

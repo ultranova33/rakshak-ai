@@ -10,6 +10,11 @@ export interface RecommendationResponse {
     historyTitle?: string;
     strategies: string[];
     warnings: string[];
+    forecast: {
+        trend: "worsening" | "improving" | "stable";
+        message: string;
+        eta: string;
+    };
     ctaContacts: { name: string; contact: string; instructions: string }[];
 }
 
@@ -82,35 +87,63 @@ export function analyzeIncident(data: IncidentData): RecommendationResponse {
         }
     }
 
-    // 3. Formulate Response
-    if (matchedHistory) {
-        return {
-            severity,
-            historicalMatch: true,
-            historyTitle: matchedHistory.title,
-            strategies: matchedHistory.strategies,
-            warnings: matchedHistory.warnings,
-            ctaContacts: getCTAs(venueLower, disasterLower)
-        };
-    }
-
-    // 4. Fallback Logic
-    let matchedGenericType = "default";
-    if (disasterLower.includes("flood") || disasterLower.includes("rain")) matchedGenericType = "flood";
-    else if (disasterLower.includes("quake") || disasterLower.includes("seismic")) matchedGenericType = "earthquake";
-    else if (disasterLower.includes("fire")) matchedGenericType = "fire";
-
-    const genericData = genericProtocols[matchedGenericType] || {
+    // 4. Fallback Logic (if no historical match)
+    let genericData = {
         strategies: ["Activate general SDRF protocols.", "Establish local incident command center.", "Alert nearest medical facilities."],
         warnings: ["Monitor situation continuously due to unknown parameters."]
     };
 
+    if (!matchedHistory) {
+        let matchedGenericType = "default";
+        if (disasterLower.includes("flood") || disasterLower.includes("rain")) matchedGenericType = "flood";
+        else if (disasterLower.includes("quake") || disasterLower.includes("seismic")) matchedGenericType = "earthquake";
+        else if (disasterLower.includes("fire")) matchedGenericType = "fire";
+
+        if (genericProtocols[matchedGenericType]) {
+            genericData = genericProtocols[matchedGenericType];
+        }
+    }
+
+    // 5. Generate Forecast
+    const forecast = generateForecast(disasterLower, severity);
+
     return {
         severity,
-        historicalMatch: false,
-        strategies: genericData.strategies,
-        warnings: genericData.warnings,
+        historicalMatch: !!matchedHistory,
+        historyTitle: matchedHistory?.title,
+        strategies: matchedHistory?.strategies || genericData.strategies,
+        warnings: matchedHistory?.warnings || genericData.warnings,
+        forecast,
         ctaContacts: getCTAs(venueLower, disasterLower)
+    };
+}
+
+function generateForecast(type: string, severity: number) {
+    if (type.includes("heat")) {
+        return {
+            trend: severity > 7 ? "worsening" as const : "stable" as const,
+            message: severity > 7 ? "Atmospheric thermal inversion expected to trap heat for 48hrs." : "Nocturnal cooling expected to provide minor relief.",
+            eta: "48-72 Hours"
+        };
+    }
+    if (type.includes("cyclone") || type.includes("wind")) {
+        return {
+            trend: "worsening" as const,
+            message: "Landfall predicted within 12hrs. Pressure drop indicates intensification.",
+            eta: "12 Hours"
+        };
+    }
+    if (type.includes("flood") || type.includes("rain")) {
+        return {
+            trend: "stable" as const,
+            message: "Upstream discharge slowing down. Water levels expected to plateau.",
+            eta: "24 Hours"
+        };
+    }
+    return {
+        trend: "stable" as const,
+        message: "Monitoring post-incident stabilization. No immediate secondary threats detected.",
+        eta: "Ongoing"
     };
 }
 
