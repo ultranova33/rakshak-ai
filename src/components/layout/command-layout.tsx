@@ -68,6 +68,7 @@ export function CommandLayout({ children }: { children: React.ReactNode }) {
                             { id: "intel", icon: Activity, label: "Live Intel" },
                             { id: "history", icon: Database, label: "Incident History" },
                             { id: "contacts", icon: Phone, label: "Action Directory" },
+                            { id: "about", icon: ShieldAlert, label: "About Us" },
                         ].map((item, idx) => {
                             const active = activeSidebarTab === item.id;
                             return (
@@ -101,6 +102,7 @@ export function CommandLayout({ children }: { children: React.ReactNode }) {
                     { id: "intel", icon: Activity, label: "Intel" },
                     { id: "history", icon: Database, label: "History" },
                     { id: "contacts", icon: Phone, label: "Directory" },
+                    { id: "about", icon: ShieldAlert, label: "About" },
                 ].map((item, idx) => {
                     const active = activeSidebarTab === item.id;
                     return (

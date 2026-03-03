@@ -11,9 +11,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAppStore } from "@/lib/store"
 import { getIncidentHistoryForState } from "@/lib/state-history-db"
-import { AlertCircle, FileText, PhoneCall, History, Globe, Database } from "lucide-react"
+import { AlertCircle, FileText, PhoneCall, History, Globe, Database, ShieldAlert } from "lucide-react"
 
 import { ForecastConditions } from "@/components/dashboard/forecast-conditions"
+import { AboutTerminal } from "@/components/dashboard/about-terminal"
 
 export default function Home() {
   const { activeSidebarTab, currentLocation, activeDisaster } = useAppStore();
@@ -29,10 +30,12 @@ export default function Home() {
 
   return (
     <CommandLayout>
-      {/* Top Section: Sensor Feeds */}
-      <section className="w-full">
-        <SensorFeeds />
-      </section>
+      {/* Top Section: Sensor Feeds (Hidden on About Us page) */}
+      {activeSidebarTab !== "about" && (
+        <section className="w-full">
+          <SensorFeeds />
+        </section>
+      )}
 
       {/* Main View controlled by Sidebar */}
       {activeSidebarTab === "intel" ? (
@@ -209,7 +212,7 @@ export default function Home() {
             })()}
           </div>
         </section>
-      ) : (
+      ) : activeSidebarTab === "contacts" ? (
         <section className="flex flex-col flex-1 border border-border bg-card rounded-sm overflow-hidden min-h-[500px]">
           <div className="p-4 border-b border-border bg-card/50 flex items-center justify-between">
             <h2 className="text-xl font-bold uppercase tracking-widest text-[#F8FAFC] flex items-center gap-2">
@@ -259,8 +262,24 @@ export default function Home() {
             </div>
           </div>
         </section>
-      )
-      }
+      ) : (
+        <section className="flex flex-col flex-1 border border-border bg-card rounded-sm overflow-hidden min-h-[500px]">
+          <div className="p-4 border-b border-border bg-card/50 flex items-center justify-between">
+            <h2 className="text-xl font-bold uppercase tracking-widest text-[#F8FAFC] flex items-center gap-2">
+              <ShieldAlert className="h-5 w-5 text-primary" />
+              Terminal Manifest: About Rakshak.AI
+            </h2>
+            <div className="flex items-center gap-2 bg-background px-3 py-1 rounded-sm border border-border">
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+                SYSTEM OPERATIONAL STATUS: NOMINAL
+              </span>
+            </div>
+          </div>
+          <div className="p-6 text-foreground flex-1 overflow-y-auto bg-background/50">
+            <AboutTerminal />
+          </div>
+        </section>
+      )}
     </CommandLayout >
   )
 }
