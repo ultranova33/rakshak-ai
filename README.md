@@ -36,32 +36,6 @@ Features
 
 ---
 
-Architecture
-
-User
- │
- ▼
-Next.js / React Interface
- │
- ├── Environmental Monitoring
- │
- ├── Incident Parameters
- │     ├── Location / State
- │     ├── Disaster Type
- │     └── Estimated Population
- │
- ▼
-Analysis / Prediction Layer
- │
- ▼
-Incident Intelligence
- │
- ├── Forecast / Risk Information
- ├── Historical Information
- └── Recommended Actions
-
----
-
 Tech Stack
 
 - Frontend: Next.js, React, TypeScript
